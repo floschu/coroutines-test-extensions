@@ -12,9 +12,9 @@ class TestCoroutineScopeRuleTest {
     val testScopeRule = TestCoroutineScopeRule()
 
     @Test
-    fun `TestFlow reset`() = runBlockingTest{
+    fun `TestFlow reset`() {
         val channel = BroadcastChannel<Int>(1)
-        val testFlow = channel.asFlow().testIn(this)
+        val testFlow = channel.asFlow().testIn(testScopeRule)
 
         channel.offer(1)
         testFlow expect emissionCount(1)
