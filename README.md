@@ -18,7 +18,7 @@ dependencies {
 
 ### TestFlow
 
-A `Flow` that contains all value emissions, the error and the completion of a `Flow` that is tested with `Flow.test()` or `Flow.testIn(CoroutineScope)`.
+A `TestFlow` contains all value emissions, the error and the completion of a `Flow` that is tested with `Flow.test()` or `Flow.testIn(CoroutineScope)`:
 
 ``` kotlin
 @Test
@@ -51,8 +51,11 @@ fun testSomeFlow() = runBlockingTest {
 
 A JUnit Rule that is a `TestCoroutineScope`.  Coroutine's launched in `TestCoroutineScopeRule` are auto canceled after the test completes.
 
-This handles the error that after a Unit Test completes, the Flow is still active:
+When testing hot `Flow`s the job of the `Flow` is still active and the following exception is thrown:
+
 > kotlinx.coroutines.test.UncompletedCoroutinesError: Test finished with active jobs
+
+This can be avoided by launching the `Flow` in the `TestCoroutineScopeRule`.
 
 ``` kotlin
 @get:Rule
