@@ -69,7 +69,8 @@ fun testSomeNeverEndingFlow() {
     channel.offer(1)
     testFlow expect emissionCount(1)
 
-    testFlow expect noCompletion() // the flow never completes, but our testScopeRule will clean this test up after its done
+    testFlow expect noCompletion()
+    // `testFlow` never completes, but our `testScopeRule` will clean up after `testSomeNeverEndingFlow` is finished
 }
 ```
 
