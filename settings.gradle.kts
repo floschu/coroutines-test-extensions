@@ -1,1 +1,1 @@
-include(":flow-test-extensions")
+include(":flow-extensions")
