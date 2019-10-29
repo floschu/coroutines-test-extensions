@@ -1,4 +1,4 @@
-package at.florianschuster.flow.test
+package at.florianschuster.test.flow
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow

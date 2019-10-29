@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation("at.florianschuster.flow-test:extensions:$version")
+    testImplementation("at.florianschuster.test:flow-extensions:$version")
 }
 ```
 

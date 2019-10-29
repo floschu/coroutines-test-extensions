@@ -1,6 +1,6 @@
 @file:Suppress("TooManyFunctions")
 
-package at.florianschuster.flow.test
+package at.florianschuster.test.flow
 
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow

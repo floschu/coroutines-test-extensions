@@ -1,7 +1,7 @@
 apply plugin: "com.jfrog.bintray"
 
 version = System.getenv("libraryVersionTag")
-group = "at.florianschuster.flow.test"
+group = "at.florianschuster.test"
 
 def settings = new Properties()
 file("deploy.properties").withInputStream { settings.load(it) }

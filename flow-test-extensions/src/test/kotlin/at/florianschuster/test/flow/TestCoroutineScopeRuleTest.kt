@@ -1,8 +1,7 @@
-package at.florianschuster.flow.test
+package at.florianschuster.test.flow
 
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 
