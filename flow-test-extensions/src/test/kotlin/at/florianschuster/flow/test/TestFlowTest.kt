@@ -1,10 +1,10 @@
 package at.florianschuster.flow.test
 
-import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import org.junit.Rule
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
@@ -12,27 +12,24 @@ import kotlin.test.assertNull
 
 class TestFlowTest {
 
-    @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
-
     @Test
-    fun `Flow test extension`() {
+    fun `Flow test extension`() = runBlockingTest {
         val testFlow = (0 until 3).asFlow().test()
-        testFlow.launchIn(testScopeRule)
+        testFlow.launchIn(this)
 
         assertEquals(listOf(0, 1, 2), testFlow.emissions)
     }
 
     @Test
-    fun `Flow testIn extension`() {
-        val testFlow = (0 until 3).asFlow().testIn(testScopeRule)
+    fun `Flow testIn extension`() = runBlockingTest {
+        val testFlow = (0 until 3).asFlow().testIn(this)
 
         assertEquals(listOf(0, 1, 2), testFlow.emissions)
     }
 
     @Test
-    fun `TestFlow emission expectations`() {
-        val testFlow = (0 until 3).asFlow().testIn(testScopeRule)
+    fun `TestFlow emission expectations`() = runBlockingTest {
+        val testFlow = (0 until 3).asFlow().testIn(this)
 
         testFlow expect noError()
         assertNull(testFlow.error)
@@ -52,9 +49,9 @@ class TestFlowTest {
     }
 
     @Test
-    fun `TestFlow error expectations`() {
+    fun `TestFlow error expectations`() = runBlockingTest {
         val exception = IOException()
-        val testFlow = flow<Int> { throw exception }.testIn(testScopeRule)
+        val testFlow = flow<Int> { throw exception }.testIn(this)
 
         testFlow expect anyError()
         testFlow expect error<IOException>()
@@ -67,19 +64,19 @@ class TestFlowTest {
     }
 
     @Test
-    fun `TestFlow reset`() {
-        val channel = BroadcastChannel<Int>(1)
-        val testFlow = channel.asFlow().testIn(testScopeRule)
+    fun `TestFlow with delay`() = runBlockingTest {
+        val testFlow = flow {
+            emit(1)
+            delay(1000)
+            emit(2)
+            delay(1000)
+            throw IOException()
+        }.testIn(this)
 
-        channel.offer(1)
-        testFlow expect emissionCount(1)
-
-        testFlow.reset()
-        testFlow expect noEmissions()
-
-        channel.offer(1)
-        testFlow expect emissionCount(1)
-
-        testFlow expect noCompletion()
+        testFlow expect emission(0, 1)
+        advanceTimeBy(1000)
+        testFlow expect emission(1, 2)
+        advanceUntilIdle()
+        testFlow expect error<IOException>()
     }
 }

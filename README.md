@@ -14,9 +14,61 @@ dependencies {
 }
 ```
 
-## concept
+## what's in it
 
-TODO
+### TestFlow
+
+A `Flow` that contains all value emissions, the error and the completion of a `Flow` that is tested with `Flow.test()` or `Flow.testIn(CoroutineScope)`.
+
+``` kotlin
+@Test
+fun testSomeFlow() = runBlockingTest {
+    // given
+    val testFlow = flow {
+        emit(1)
+        emit(2)
+        emit(3)
+        delay(1000)
+        throw IOException()
+    }.testIn(scope = this)
+
+    // then
+    testFlow expect emission(index = 0, expected = 1)
+    testFlow expect emission(index = 2, expected = 3)
+    testFlow expect emissions(1, 2, 3)
+    testFlow expect emissionCount(3)
+    testFlow expect noErrors()
+    
+    advanceTimeBy(1000)
+    
+    testFlow expect error<IOException>()
+    testFlow expect anyCompletion()
+    testFlow expect exceptionalCompletion<IOException>()
+}
+```
+
+### TestCoroutineScopeRule
+
+A JUnit Rule that is a `TestCoroutineScope`.  Coroutine's launched in `TestCoroutineScopeRule` are auto canceled after the test completes.
+
+This handles the error that after a Unit Test completes, the Flow is still active:
+> kotlinx.coroutines.test.UncompletedCoroutinesError: Test finished with active jobs
+
+``` kotlin
+@get:Rule
+val testScopeRule = TestCoroutineScopeRule()
+
+@Test
+fun testSomeNeverEndingFlow() {
+    val channel = BroadcastChannel<Int>(1)
+    val testFlow = channel.asFlow().testIn(testScopeRule)
+
+    channel.offer(1)
+    testFlow expect emissionCount(1)
+
+    testFlow expect noCompletion() // the flow never completes, but our testScopeRule will clean this test up after its done
+}
+```
 
 ## author
 

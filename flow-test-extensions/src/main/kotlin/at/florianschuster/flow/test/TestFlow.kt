@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 
 /**
- * A [Flow] that contains all value emissions, error and completion of a [Flow] that is
+ * A [Flow] that contains all value emissions, the error and the completion of a [Flow] that is
  * tested with [Flow.test] or [Flow.testIn].
  */
 @FlowPreview
