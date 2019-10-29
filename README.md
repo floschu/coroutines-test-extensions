@@ -1,2 +1,2 @@
-# flow-testcollector
-RxJava TestObserver for Kotlin Coroutines Flow
+# flow test extensions
+kotlin coroutines flow test extensions
