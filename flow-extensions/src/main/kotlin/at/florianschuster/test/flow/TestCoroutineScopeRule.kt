@@ -15,21 +15,21 @@ import kotlin.coroutines.ContinuationInterceptor
  * Rule that is a [TestCoroutineScope].
  * Coroutine's launched in [TestCoroutineScopeRule] are auto canceled after the test completes.
  *
- * @property overrideMainDispatcher Boolean if set to true, [Dispatchers.Main] will use
- * [TestCoroutineDispatcher] of [TestCoroutineScope].
+ * @property overrideMainDispatcher Boolean if set to true, [Dispatchers.Main] will be overriden
+ * with [dispatcher].
  */
 @ExperimentalCoroutinesApi
 class TestCoroutineScopeRule(
     val overrideMainDispatcher: Boolean = false
 ) : TestRule, TestCoroutineScope by TestCoroutineScope() {
 
-    val mainDispatcher = coroutineContext[ContinuationInterceptor] as TestCoroutineDispatcher
+    val dispatcher = coroutineContext[ContinuationInterceptor] as TestCoroutineDispatcher
 
     override fun apply(base: Statement, description: Description): Statement =
         object : Statement() {
             @Throws(Throwable::class)
             override fun evaluate() {
-                if (overrideMainDispatcher) Dispatchers.setMain(mainDispatcher)
+                if (overrideMainDispatcher) Dispatchers.setMain(dispatcher)
                 base.evaluate()
                 cleanupTestCoroutines()
                 if (overrideMainDispatcher) Dispatchers.resetMain()
