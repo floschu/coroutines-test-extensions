@@ -1,5 +1,10 @@
-package at.florianschuster.test.flow
+package at.florianschuster.test.coroutines
 
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.noCompletion
+import at.florianschuster.test.flow.noEmissions
+import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.asFlow
 import org.junit.Rule
@@ -8,7 +13,8 @@ import org.junit.Test
 class TestCoroutineScopeRuleTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testScopeRule =
+        TestCoroutineScopeRule()
 
     @Test
     fun `TestFlow reset`() {

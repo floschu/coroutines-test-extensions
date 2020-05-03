@@ -1,1 +1,1 @@
-include(":flow-extensions")
+include(":coroutines-extensions")

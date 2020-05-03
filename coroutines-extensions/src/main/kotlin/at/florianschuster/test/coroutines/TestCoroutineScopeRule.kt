@@ -1,4 +1,4 @@
-package at.florianschuster.test.flow
+package at.florianschuster.test.coroutines
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

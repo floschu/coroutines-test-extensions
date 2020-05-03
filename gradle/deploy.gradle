@@ -10,7 +10,7 @@ project.ext {
     mavProjectName = settings.name
     mavLibraryDescription = settings.description
     mavPublishToMavenLocal = true
-    mavSiteUrl = "https://github.com/floschu/flow-test-extensions"
+    mavSiteUrl = "https://github.com/floschu/coroutines-test-extensions"
     mavGitUrl = mavSiteUrl + ".git"
     mavLibraryLicenses = ["Apache-2.0": 'http://www.apache.org/licenses/LICENSE-2.0.txt']
 }
