@@ -13,25 +13,26 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.2"
+    // available: "1.3.5-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlin: String = "1.3.50"
+    const val org_jetbrains_kotlin: String = "1.3.72"
 
-    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.0.0"
+    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4"
+    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
 
-    const val ktlint: String = "0.34.2" // available: "0.35.0"
+    const val ktlint: String = "0.36.0"
 
-    const val junit: String = "4.12"
+    const val junit: String = "4.13"
 
     /**
      * Current version: "5.6.3"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "5.6.3"
+    const val gradleLatestVersion: String = "6.3"
 }
 
 /**
@@ -40,4 +41,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
