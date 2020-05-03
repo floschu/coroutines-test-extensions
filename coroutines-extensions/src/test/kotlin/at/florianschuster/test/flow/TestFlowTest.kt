@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import java.io.IOException
-import java.lang.IllegalStateException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
