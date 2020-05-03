@@ -35,9 +35,11 @@ fun testSomeFlow() = runBlockingTest {
     // then
     testFlow expect emission(index = 0, expected = 1)
     testFlow expect emission(index = 2, expected = 3)
+    testFlow expect emission(index = 2) { it >= 3 }
     testFlow expect emissions(1, 2, 3)
     testFlow expect emissionCount(3)
     testFlow expect noErrors()
+    testFlow expect allEmissions { it is Number }
     
     advanceTimeBy(1000)
     
