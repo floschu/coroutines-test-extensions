@@ -21,7 +21,7 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
+    const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
 
     const val ktlint: String = "0.36.0"
 
