@@ -5,12 +5,16 @@ import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import java.io.IOException
+import java.lang.IllegalStateException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 internal class TestFlowTest {
@@ -108,5 +112,36 @@ internal class TestFlowTest {
 
         testFlow2 expect emissions(0, 1, 2, 4)
         testFlow expect regularCompletion()
+    }
+
+    @Test
+    fun `TestFlow throws assertion errors`() = runBlockingTest {
+        val emptyTestFlow = emptyFlow<Int>().testIn(this)
+        val nonEmptyTestFlow = flowOf(0).testIn(this)
+        val errorTestFlow = flow<Int> { throw IOException() }.testIn(this)
+        val channel = BroadcastChannel<Int>(BUFFERED)
+        val channelTestFlow = channel.asFlow().testIn(this)
+
+        assertFailsWith<AssertionError> { errorTestFlow expect noError() }
+        assertFailsWith<AssertionError> { emptyTestFlow expect anyError() }
+        assertFailsWith<AssertionError> { emptyTestFlow expect error<Throwable>() }
+        assertFailsWith<AssertionError> { nonEmptyTestFlow expect noEmissions() }
+        assertFailsWith<AssertionError> { emptyTestFlow expect anyEmission() }
+        assertFailsWith<AssertionError> { emptyTestFlow expect emissionCount(1) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect emissions(0, 1) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect emissions(listOf(0, 1)) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect allEmissions { it > 0 } }
+        assertFailsWith<AssertionError> { emptyTestFlow expect emission(index = 0, expected = 1) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect emission(index = 0) { it == 1 } }
+        assertFailsWith<AssertionError> { emptyTestFlow expect firstEmission(0) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect firstEmission { it == 0 } }
+        assertFailsWith<AssertionError> { emptyTestFlow expect lastEmission(0) }
+        assertFailsWith<AssertionError> { emptyTestFlow expect lastEmission { it == 0 } }
+        assertFailsWith<AssertionError> { nonEmptyTestFlow expect noCompletion() }
+        assertFailsWith<AssertionError> { channelTestFlow expect anyCompletion() }
+        assertFailsWith<AssertionError> { errorTestFlow expect regularCompletion() }
+        assertFailsWith<AssertionError> { nonEmptyTestFlow expect exceptionalCompletion<Throwable>() }
+
+        channel.close()
     }
 }

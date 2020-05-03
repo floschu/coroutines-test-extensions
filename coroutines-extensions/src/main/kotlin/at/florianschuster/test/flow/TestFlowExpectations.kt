@@ -45,6 +45,7 @@ fun anyError(): TestFlowExpectation<*> = { testFlow ->
  */
 @FlowPreview
 inline fun <reified T : Throwable> error(): TestFlowExpectation<*> = { testFlow ->
+    assertNotNull(testFlow.error, "${testFlow.tag} has no error")
     assertEquals(T::class, testFlow.error!!::class, "${testFlow.tag} has wrong error")
 }
 
@@ -95,7 +96,7 @@ fun <T> emissions(expected: List<T>): TestFlowExpectation<T> = { testFlow ->
 }
 
 /**
- * Asserts the [predicate] for all emissions that occurred during collection the the [Flow].
+ * Asserts the [predicate] for every emission that occurred during collection the the [Flow].
  */
 @FlowPreview
 fun <T> allEmissions(predicate: (T) -> Boolean): TestFlowExpectation<T> = { testFlow ->
