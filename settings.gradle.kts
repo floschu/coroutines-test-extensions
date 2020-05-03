@@ -1,1 +1,1 @@
-include(":coroutines-extensions")
+include(":coroutines-test-extensions")
