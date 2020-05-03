@@ -5,6 +5,8 @@ import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -82,12 +84,16 @@ internal class TestFlowTest {
             delay(1000)
             emit(2)
             delay(1000)
+            emitAll(flowOf(3, 4))
+            delay(1000)
             throw IOException()
         }.testIn(this)
 
         testFlow expect emission(0, 1)
         advanceTimeBy(1000)
         testFlow expect emission(1, 2)
+        advanceTimeBy(1000)
+        testFlow expect emissions(1, 2, 3, 4)
         advanceUntilIdle()
         testFlow expect error<IOException>()
     }
@@ -111,6 +117,17 @@ internal class TestFlowTest {
 
         testFlow2 expect emissions(0, 1, 2, 4)
         testFlow expect regularCompletion()
+    }
+
+    @Test
+    fun `TestFlow from callbackFlow`() = runBlockingTest {
+        val testFlow = callbackFlow<Int> {
+            offer(0)
+            send(1)
+            sendBlocking(2)
+        }.testIn(this)
+
+        testFlow expect emissions(0, 1, 2)
     }
 
     @Test
