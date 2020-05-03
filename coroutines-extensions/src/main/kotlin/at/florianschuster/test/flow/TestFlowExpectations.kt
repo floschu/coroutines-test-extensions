@@ -4,6 +4,7 @@ package at.florianschuster.test.flow
 
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlin.math.exp
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -60,7 +61,7 @@ fun noEmissions(): TestFlowExpectation<*> = { testFlow ->
  */
 @FlowPreview
 fun anyEmission(): TestFlowExpectation<*> = { testFlow ->
-    assertNotEquals(0, testFlow.emissions.count(), "${testFlow.tag} has no values")
+    testFlow.assertNotEmpty()
 }
 
 /**
@@ -80,6 +81,7 @@ fun emissionCount(expected: Int): TestFlowExpectation<*> = { testFlow ->
  */
 @FlowPreview
 fun <T> emissions(vararg expected: T): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
     assertEquals(expected.toList(), testFlow.emissions, "${testFlow.tag} has wrong emissions")
 }
 
@@ -88,7 +90,22 @@ fun <T> emissions(vararg expected: T): TestFlowExpectation<T> = { testFlow ->
  */
 @FlowPreview
 fun <T> emissions(expected: List<T>): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
     assertEquals(expected, testFlow.emissions, "${testFlow.tag} has wrong emissions")
+}
+
+/**
+ * Asserts the [predicate] for all emissions that occurred during collection the the [Flow].
+ */
+@FlowPreview
+fun <T> allEmissions(predicate: (T) -> Boolean): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
+    testFlow.emissions.forEachIndexed { index, emission ->
+        assertTrue(
+            predicate.invoke(emission),
+            "${testFlow.tag} emission at $index does not match predicate"
+        )
+    }
 }
 
 /**
@@ -96,7 +113,26 @@ fun <T> emissions(expected: List<T>): TestFlowExpectation<T> = { testFlow ->
  */
 @FlowPreview
 fun <T> emission(index: Int, expected: T): TestFlowExpectation<T> = { testFlow ->
-    assertEquals(expected, testFlow.emissions[index], "${testFlow.tag} no emission at $index")
+    testFlow.assertNotEmpty()
+    testFlow.hasEmissionAt(index)
+    assertEquals(
+        expected,
+        testFlow.emissions[index],
+        "${testFlow.tag} emission at $index is not $expected"
+    )
+}
+
+/**
+ * Asserts the [predicate] for the emission at [index] in the [emissions] collection.
+ */
+@FlowPreview
+fun <T> emission(index: Int, predicate: (T) -> Boolean): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
+    testFlow.hasEmissionAt(index)
+    assertTrue(
+        predicate.invoke(testFlow.emissions[index]),
+        "${testFlow.tag} emission at $index does not match predicate"
+    )
 }
 
 /**
@@ -104,7 +140,20 @@ fun <T> emission(index: Int, expected: T): TestFlowExpectation<T> = { testFlow -
  */
 @FlowPreview
 fun <T> firstEmission(expected: T): TestFlowExpectation<T> = { testFlow ->
-    assertEquals(expected, testFlow.emissions.first(), "${testFlow.tag} wrong first emission")
+    testFlow.assertNotEmpty()
+    assertEquals(expected, testFlow.emissions.first(), "${testFlow.tag} has wrong first emission")
+}
+
+/**
+ * Asserts the [predicate] for the first emission in the [emissions] collection.
+ */
+@FlowPreview
+fun <T> firstEmission(predicate: (T) -> Boolean): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
+    assertTrue(
+        predicate.invoke(testFlow.emissions.first()),
+        "${testFlow.tag} first emission does not match predicate"
+    )
 }
 
 /**
@@ -112,7 +161,20 @@ fun <T> firstEmission(expected: T): TestFlowExpectation<T> = { testFlow ->
  */
 @FlowPreview
 fun <T> lastEmission(expected: T): TestFlowExpectation<T> = { testFlow ->
-    assertEquals(expected, testFlow.emissions.last(), "${testFlow.tag} wrong last emission")
+    testFlow.assertNotEmpty()
+    assertEquals(expected, testFlow.emissions.last(), "${testFlow.tag} has wrong last emission")
+}
+
+/**
+ * Asserts the [predicate] for the last emission in the [emissions] collection.
+ */
+@FlowPreview
+fun <T> lastEmission(predicate: (T) -> Boolean): TestFlowExpectation<T> = { testFlow ->
+    testFlow.assertNotEmpty()
+    assertTrue(
+        predicate.invoke(testFlow.emissions.last()),
+        "${testFlow.tag} has wrong last emission matching predicate"
+    )
 }
 
 /**
@@ -147,4 +209,14 @@ fun regularCompletion(): TestFlowExpectation<*> = { testFlow ->
 inline fun <reified T : Throwable> exceptionalCompletion(): TestFlowExpectation<*> = { testFlow ->
     testFlow expect anyCompletion()
     testFlow expect error<T>()
+}
+
+@FlowPreview
+private fun TestFlow<*>.assertNotEmpty() {
+    assertNotEquals(0, emissions.count(), "$tag has no values")
+}
+
+@FlowPreview
+private fun TestFlow<*>.hasEmissionAt(index: Int) {
+    assertNotNull(emissions.getOrNull(index), "$tag has no emission at $index")
 }

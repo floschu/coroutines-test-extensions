@@ -1,5 +1,8 @@
 package at.florianschuster.test.flow
 
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
@@ -37,11 +40,17 @@ internal class TestFlowTest {
         testFlow expect anyEmission()
         testFlow expect emissionCount(3)
         testFlow expect firstEmission(0)
+        testFlow expect firstEmission { it == 0 }
         testFlow expect lastEmission(2)
+        testFlow expect lastEmission { it == 2 }
         testFlow expect emissions(listOf(0, 1, 2))
         testFlow expect emission(index = 0, expected = 0)
-        testFlow expect emission(1, 1)
-        testFlow expect emission(2, 2)
+        testFlow expect emission(index = 0) { it == 0 }
+        testFlow expect emission(index = 1, expected = 1)
+        testFlow expect emission(index = 1) { it == 1 }
+        testFlow expect emission(index = 2, expected = 2)
+        testFlow expect emission(index = 2) { it == 2 }
+        testFlow expect allEmissions { it < 10 }
         assertEquals(listOf(0, 1, 2), testFlow.emissions)
 
         testFlow expect anyCompletion()
@@ -78,5 +87,26 @@ internal class TestFlowTest {
         testFlow expect emission(1, 2)
         advanceUntilIdle()
         testFlow expect error<IOException>()
+    }
+
+    @Test
+    fun `TestFlow from BroadCastChannel`() = runBlockingTest {
+        val channel = BroadcastChannel<Int>(BUFFERED)
+        val testFlow = channel.asFlow().testIn(this)
+        val testFlow2 = channel.asFlow().testIn(this)
+
+        channel.offer(0)
+        channel.send(1)
+        channel.sendBlocking(2)
+        testFlow expect emissions(0, 1, 2)
+
+        channel.offer(4)
+        testFlow expect emissions(0, 1, 2, 4)
+
+        channel.close()
+        testFlow expect regularCompletion()
+
+        testFlow2 expect emissions(0, 1, 2, 4)
+        testFlow expect regularCompletion()
     }
 }
