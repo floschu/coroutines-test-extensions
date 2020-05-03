@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asFlow
 import org.junit.Rule
 import org.junit.Test
 
-class TestCoroutineScopeRuleTest {
+internal class TestCoroutineScopeRuleTest {
 
     @get:Rule
     val testScopeRule =

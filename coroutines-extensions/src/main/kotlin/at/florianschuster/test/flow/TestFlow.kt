@@ -37,6 +37,7 @@ class TestFlow<T>(
     var completed: Boolean = false
         private set
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun collectSafely(collector: FlowCollector<T>) {
         try {
             source.collect {

@@ -10,7 +10,7 @@ import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class TestFlowTest {
+internal class TestFlowTest {
 
     @Test
     fun `Flow test extension`() = runBlockingTest {
