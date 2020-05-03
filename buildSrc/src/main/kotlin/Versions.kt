@@ -13,7 +13,7 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.2"
-    // available: "1.3.5-1.4-M1-release-99"
+             // available: "1.3.5-1.4-M1-release-99"
 
     const val org_jetbrains_kotlin: String = "1.3.72"
 
@@ -41,4 +41,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

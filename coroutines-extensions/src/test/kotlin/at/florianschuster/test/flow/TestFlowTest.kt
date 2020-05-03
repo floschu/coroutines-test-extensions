@@ -79,7 +79,7 @@ internal class TestFlowTest {
 
     @Test
     fun `TestFlow with delay`() = runBlockingTest {
-        val testFlow = flow {
+        val testFlow = flow<Int> {
             emit(1)
             delay(1000)
             emit(2)
